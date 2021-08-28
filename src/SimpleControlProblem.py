@@ -3,7 +3,7 @@ import numpy as np
 
 class SimpleControlProblemDiscrete:
     def __init__(self, dt=0.05, terminal_time=2, initial_state=np.array([0, 1]),
-                 action_values=np.array([[-1], [0], [1]])):
+                 action_values=np.array([[-1], [-0.5], [0], [0.5], [1]])):
         self.state_dim = 2
         self.action_values = action_values
         self.action_n = self.action_values.size

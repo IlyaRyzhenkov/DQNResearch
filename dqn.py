@@ -21,16 +21,17 @@ def run_dqn(env, agent, episode_n=100):
 
 if __name__ == "__main__":
     dt = 0.2
+    episode_n = 500
     env = SimpleControlProblem.SimpleControlProblemDiscrete(dt=dt)
     state_dim = env.state_dim
     action_n = env.action_n
     agent = DQNAgent.DQNAgent(state_dim, action_n)
     print("Basic DQN test:")
-    basic_dqn_stat = run_dqn(env, agent)
+    basic_dqn_stat = run_dqn(env, agent, episode_n)
 
     env = SimpleControlProblem.SimpleControlProblemDiscrete(dt=dt)
     agent = UpdatedDQNAgent.UpdatedDQNAgent(state_dim, action_n, env)
     print("Updated DQN test:")
-    updated_dqn_stat = run_dqn(env, agent)
+    updated_dqn_stat = run_dqn(env, agent, episode_n)
 
-    CSVWriter.CSVWriter.write_dqn_stat_scv("data/result-02-dt.csv", basic_dqn_stat, updated_dqn_stat)
+    CSVWriter.CSVWriter.write_dqn_stat_scv("data/result-02-dt-500ep-5st.csv", basic_dqn_stat, updated_dqn_stat)
