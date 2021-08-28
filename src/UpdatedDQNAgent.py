@@ -1,6 +1,5 @@
 import torch
-
-import DQNAgent
+from src import DQNAgent
 
 
 class UpdatedDQNAgent(DQNAgent.DQNAgent):
@@ -8,18 +7,21 @@ class UpdatedDQNAgent(DQNAgent.DQNAgent):
         super().__init__(state_dim, action_n)
         self.env = env
 
-    def calculate_targets(self, q_values, next_q_values, actions, rewards, pre_dones, dones):
+    def calculate_targets(self, q_values, next_states, actions, rewards, dones):
         targets = q_values.clone()
+        next_q_values = self.q(torch.FloatTensor(next_states))
         for i in range(self.batch_size):
             if dones[i]:
                 targets[i][actions[i]] = rewards[i]
-            elif pre_dones[i]:
-                targets[i][actions[i]] = rewards[i] + self.gamma * max(next_q_values[i])
             else:
-                max_val = -10000000
-                for action in actions:
-                    state, rew = self.env.virtual_step(action)
-                    val = rewards[i] + rew + self.gamma * max(self.q(torch.FloatTensor([state]))[0])
+                max_val = float("-inf")
+                for next_action in actions:
+                    next_state, next_reward, next_done = self.env.virtual_step(next_states[i], next_action)
+                    if not next_done:
+                        val = rewards[i] + self.gamma * next_reward + self.gamma ** 2 * max(
+                            self.q(torch.FloatTensor([next_state]))[0])
+                    else:
+                        val = rewards[i] + self.gamma * max(next_q_values[i])
                     if val > max_val:
                         max_val = val
                 targets[i][actions[i]] = rewards[i] + self.gamma * max_val

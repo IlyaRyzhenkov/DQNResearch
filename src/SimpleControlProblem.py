@@ -32,12 +32,14 @@ class SimpleControlProblemDiscrete:
         elif self.step_n >= self.total_steps:
             reward -= self.state[1] ** 2
             done = True
-        return self.state, reward, pre_done, done, None
+        return self.state, reward, done, None
 
-    def virtual_step(self, action):
+    def virtual_step(self, state, action):
         _action = self.action_values[action]
-        next_state = self.state + np.array([1, _action[0]]) * self.dt
+        next_state = state + np.array([1, _action[0]]) * self.dt
         reward = - 0.5 * _action[0] ** 2 * self.dt
+        done = False
         if next_state[0] >= self.terminal_time:
             reward -= next_state[1] ** 2
-        return next_state, reward
+            done = True
+        return next_state, reward, done

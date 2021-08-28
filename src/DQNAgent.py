@@ -2,7 +2,7 @@ import numpy as np
 from torch import nn
 import torch
 import random
-import network
+from src import network
 
 
 class DQNAgent(nn.Module):
@@ -30,20 +30,18 @@ class DQNAgent(nn.Module):
         action = np.random.choice(actions, p=probs)
         return action
 
-    def fit(self, state, action, reward, pre_done, done, next_state):
-        self.memory.append([state, action, reward, pre_done, done, next_state])
+    def fit(self, state, action, reward, done, next_state):
+        self.memory.append([state, action, reward, done, next_state])
         if len(self.memory) > self.memory_size:
             self.memory.pop(0)
 
         if len(self.memory) > self.batch_size:
             batch = random.sample(self.memory, self.batch_size)
 
-            states, actions, rewards, pre_dones, dones, next_states = list(zip(*batch))
+            states, actions, rewards, dones, next_states = list(zip(*batch))
             states = torch.FloatTensor(states)
             q_values = self.q(states)
-            next_states = torch.FloatTensor(next_states)
-            next_q_values = self.q(next_states)
-            targets = self.calculate_targets(q_values, next_q_values, actions, rewards, pre_dones, dones)
+            targets = self.calculate_targets(q_values, next_states, actions, rewards, dones)
 
             loss = torch.mean((targets.detach() - q_values) ** 2)
 
@@ -54,8 +52,9 @@ class DQNAgent(nn.Module):
             if self.epsilon > 0.01:
                 self.epsilon *= 0.999
 
-    def calculate_targets(self, q_values, next_q_values, actions, rewards, pre_dones, dones):
+    def calculate_targets(self, q_values, next_states, actions, rewards, dones):
         targets = q_values.clone()
+        next_q_values = self.q(torch.FloatTensor(next_states))
         for i in range(self.batch_size):
             if not dones[i]:
                 targets[i][actions[i]] = rewards[i] + self.gamma * max(next_q_values[i])
