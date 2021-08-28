@@ -15,7 +15,7 @@ class UpdatedDQNAgent(DQNAgent.DQNAgent):
                 targets[i][actions[i]] = rewards[i]
             else:
                 max_val = float("-inf")
-                for next_action in actions:
+                for next_action in range(self.action_n):
                     next_state, next_reward, next_done = self.env.virtual_step(next_states[i], next_action)
                     if not next_done:
                         val = rewards[i] + self.gamma * next_reward + self.gamma ** 2 * max(
