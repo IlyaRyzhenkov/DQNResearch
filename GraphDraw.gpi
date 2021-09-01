@@ -1,12 +1,16 @@
 #! /usr/bin/gnuplot -persist
-set terminal postscript eps enhanced color solid
-set output "graphs/graph-02-dt-500ep-5st.ps"
+#set terminal postscript eps enhanced color solid
+#set output "graphs/graph-02-dt-500ep-5st.ps"
+set terminal png size 800, 600 enhanced font "Helvetica,20"
+set output "graphs/png/graph-02-dt-500ep-5st.png"
+
 
 set datafile separator ';'
 set grid xtics ytics
 
+set key right bottom
 set ylabel "Reward"
 set xlabel 'Episode'
 set title "Learning efficiency comparison"
 
-plot "data/result-02-dt-500ep-5st.csv" using 1:2 with lines title "DQN", '' using 1:3 with lines title "Updated DQN"
+plot "data/graph-02-dt-500ep-5st.csv" using 1:2 with lines title "DQN", '' using 1:3 with lines title "Modified DQN"
