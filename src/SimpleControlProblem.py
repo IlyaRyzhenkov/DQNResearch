@@ -25,11 +25,8 @@ class SimpleControlProblemDiscrete:
         self.state = self.state + np.array([1, _action[0]]) * self.dt
         self.step_n += 1
         reward = - 0.5 * _action[0] ** 2 * self.dt
-        pre_done = False
         done = False
-        if self.step_n == self.total_steps - 1:
-            pre_done = True
-        elif self.step_n >= self.total_steps:
+        if self.step_n >= self.total_steps:
             reward -= self.state[1] ** 2
             done = True
         return self.state, reward, done, None
